@@ -5,6 +5,11 @@ format: html
 editor: visual
 ---
 
+```{r}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
 ## Task 1
 
 1.  If your working directory is `myfolder/homework/`, what relative path would you specify to get the file located at `myfolder/MyData.csv`?
@@ -26,8 +31,8 @@ editor: visual
 5.  Rewrite the following nested function call using baseR's chaining operator:
 
 ```{r}
-arrange(filter(select(as_tibble(iris), starts_with("Petal"), Species), Petal.Length <
-1.55), Species)
+#arrange(filter(select(as_tibble(iris), starts_with("Petal"), Species), Petal.Length <
+#1.55), Species)
 ```
 
 ```{r}
@@ -230,7 +235,7 @@ library(dplyr)
 # creating a chain for the new combined data file 
 new_data |>
   filter(quality > 6.5 & alcohol < 132) |>
-  arrange(desc(quality)) |>
+  #arrange(desc(quality)) |>
   select(contains("acid"), alcohol, winetype, quality) |>
   mutate(across(!alcohol), mean, .names("mean_alcohol")
 )
