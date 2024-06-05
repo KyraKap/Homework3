@@ -1,0 +1,242 @@
+---
+title: "ST558 Homework 3"
+author: "Kyra Kapsaskis"
+format: html
+editor: visual
+---
+
+## Task 1
+
+1.  If your working directory is `myfolder/homework/`, what relative path would you specify to get the file located at `myfolder/MyData.csv`?
+
+> `my_data <- read_csv("MyData.csv")`
+
+2.  What are the benefits of using R projects?
+
+> It uses the same working directory and it keeps a history of your stored objects and files in your directory folder.
+
+3.  What is git and what is github?
+
+> Git allows you to create repositories and track the changes to a project. Github is the portal that allows people to see your work and interact with it.
+
+4.  What are the two main differences between a `tibble` and a `data.frame`?
+
+> Tibble is much neater and more concise when printing. It includes some useful information that a data frame does not. And not all operations can be done on all of the columns in a tibble. There are more restrictions for doing math on the tibble.
+
+5.  Rewrite the following nested function call using baseR's chaining operator:
+
+```{r}
+arrange(filter(select(as_tibble(iris), starts_with("Petal"), Species), Petal.Length <
+1.55), Species)
+```
+
+```{r}
+iris |>
+  arrange(Species) |>
+  filter(Petal.Length < 1.55) |>
+  select(starts_with("Petal"), Species) 
+
+```
+
+6.  What is meant by long format data and wide format data? Which do we generally prefer for statistical analysis?
+
+> Longer usually has unwanted variables or unnecessary NA values removed. Wider has the potential to create missing values. Both have their benefits for different statistical goals and types of data.
+
+## Task 2
+
+```{r}
+install.packages("tidyverse")
+```
+
+```{r}
+library(tidyverse)
+```
+
+### Glass data
+
+1.  Read the data into R (from URL, using tidyverse functions, add column names)
+
+```{r}
+# I decided to use the col_names argument to create the column names
+
+glass_data <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/glass.data", col_names = c("Id", "RI", "Na", "Mg", "Al", "Si", "K", "Ca", "Ba", "Fe", "Type of Glass"))
+```
+
+-   print out the tibble by calling the object name
+
+```{r}
+# viewing the column names to make sure they worked correctly
+print(glass_data)
+```
+
+2.  use the mutate() function to start a chain that overwrites the Type_of_glass variable.
+    -   use the ifelse() function to create a character string version
+
+```{r}
+glass_data <- glass_data |> 
+  
+  mutate(`Type of Glass` = ifelse(`Type of Glass` == 1, "building_windows_float_processed", ifelse(`Type of Glass` == 2, "building_windows_non_float_processed", ifelse(`Type of Glass` == 3, "vehicle_windows_float_processed", ifelse(`Type of Glass` == 4, "vehicle_windows_non_float_processed", ifelse(`Type of Glass` == 5, "containers", ifelse(`Type of Glass` == 6, "tableware", ifelse(`Type of Glass` == 7, "headlamps", "NA")))))))
+  ) |>
+  filter(Fe < 0.2 & (`Type of Glass` == "tableware" | `Type of Glass` == "headlamps"))
+
+```
+
+```{r}
+# checking the new names and filters
+print(glass_data)
+```
+
+### Yeast Data
+
+1.  Read the data into R (same process as above, make sure to check delimiter)
+    -   add column names
+    -   print out the tibble
+
+```{r}
+
+# need to use read_table() because the delimiter is a space
+
+yeast_data <- read_table("https://www4.stat.ncsu.edu/~online/datasets/yeast.data", col_names = c("seq_name", "mcg", "gvh", "alm", "mit", "erl", "pox", "vac", "nuc", "class"))
+```
+
+2.  start a chain that removes the seq_name and nuc columns
+
+```{r}
+yeast_data <- yeast_data |>
+  select(mcg:vac, class)
+```
+
+```{r}
+print(yeast_data)
+```
+
+3.  continue chain. add columns corresponding to the mean and median of each numeric variable at each class grouping (see the across() function as we did in the dplyr video)
+
+```{r}
+yeast_data <- yeast_data |>
+  select(mcg:vac, class) |>
+  group_by(class) |>
+  mutate(across(mcg:vac, mean, .names = "mean_{.col}")) |>
+  mutate(across(mcg:vac, median, .names = "median_{.col}"))
+```
+
+```{r}
+View(yeast_data)
+```
+
+## Task 2 - combining excel and delimited data
+
+### reading in the white wine data
+
+```{r}
+library(readxl)
+white_wine <- read_excel("white-wine.xlsx")
+print(white_wine)
+```
+
+```{r}
+# creating a new object with the correct variable names
+white_wine_variables <- read_excel("white-wine.xlsx", 
+    sheet = "variables")
+print(white_wine_variables)
+```
+
+```{r}
+#converting the column names
+colnames(white_wine) <- c(white_wine_variables$Variables)
+```
+
+```{r}
+# How does it look?
+
+print(white_wine)
+```
+
+```{r}
+# creating the wine type variable
+white_wine <- white_wine |>
+  mutate(
+    winetype = "white"
+  )
+```
+
+```{r}
+
+# seeing how it looks
+print(white_wine)
+```
+
+```{r}
+# importing readr, reading in the red wine data
+
+library(readr)
+```
+
+```{r}
+# making sure to address the semicolon delimiter
+red_wine <- read_delim("https://www4.stat.ncsu.edu/~online/datasets/red-wine.csv", delim = ";")
+```
+
+```{r}
+# all the column types look good
+problems(red_wine)
+```
+
+```{r}
+# checking what the types are to make sure
+
+spec(red_wine)
+```
+
+```{r}
+# using the correct column names
+colnames(red_wine) <- c(white_wine_variables$Variables)
+print(red_wine)
+```
+
+```{r}
+
+# creating the wine type variable for the red wine
+red_wine <- red_wine |>
+  mutate(
+    winetype = "red"
+  )
+```
+
+```{r}
+# combine the data sets
+new_data <- bind_rows(white_wine, red_wine)
+```
+
+```{r}
+# checking to see how it looks
+print(new_data)
+```
+
+```{r}
+# Here, I am checking to see that there is in fact red and white data in this new object
+new_data |>
+  filter(winetype == "red")
+```
+
+```{r}
+# and also white
+new_data |>
+  filter(winetype == "white")
+```
+
+```{r}
+#installing a library
+library(dplyr)
+```
+
+```{r}
+# creating a chain for the new combined data file 
+new_data |>
+  filter(quality > 6.5 & alcohol < 132) |>
+  arrange(desc(quality)) |>
+  select(contains("acid"), alcohol, winetype, quality) |>
+  mutate(across(!alcohol), mean, .names("mean_alcohol")
+)
+
+```
