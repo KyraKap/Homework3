@@ -33,10 +33,11 @@ editor: visual
 ```
 
 ```{r}
-iris |>
-  arrange(Species) |>
-  filter(Petal.Length < 1.55) |>
-  select(starts_with("Petal"), Species) 
+
+#iris |>
+ # arrange(Species) |>
+#  filter(Petal.Length < 1.55) |>
+#  select(starts_with("Petal"), Species) 
 
 ```
 
@@ -46,9 +47,6 @@ iris |>
 
 ## Task 2
 
-```{r}
-install.packages("tidyverse")
-```
 
 ```{r}
 library(tidyverse)
@@ -230,11 +228,12 @@ library(dplyr)
 
 ```{r}
 # creating a chain for the new combined data file 
-new_data |>
-  filter(quality > 6.5 & alcohol < 132) |>
+
+#new_data |>
+#  filter(quality > 6.5 & alcohol < 132) |>
   #arrange(desc(quality)) |>
-  select(contains("acid"), alcohol, winetype, quality) |>
-  mutate(across(!alcohol), mean, .names("mean_alcohol")
-)
+#  select(contains("acid"), alcohol, winetype, quality) |>
+#  mutate(across(!alcohol), mean, .names("mean_alcohol")
+#)
 
 ```
