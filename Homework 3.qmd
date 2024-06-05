@@ -5,10 +5,7 @@ format: html
 editor: visual
 ---
 
-```{r}
-install.packages("tidyverse")
-library(tidyverse)
-```
+
 
 ## Task 1
 
