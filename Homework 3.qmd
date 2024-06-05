@@ -120,10 +120,6 @@ yeast_data <- yeast_data |>
   mutate(across(mcg:vac, median, .names = "median_{.col}"))
 ```
 
-```{r}
-View(yeast_data)
-```
-
 ## Task 2 - combining excel and delimited data
 
 ### reading in the white wine data
